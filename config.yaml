@@ -1,0 +1,63 @@
+name: "MPCNC Primo"
+board: "ESP32 Dev"
+
+stepping:
+  engine: RMT
+  idle_ms: 250
+  dir_delay_us: 1
+  pulse_us: 4
+  disable_delay_us: 0
+
+control:
+  safety_door_pin: gpio.21:low:pu
+
+axes:
+  x:
+    steps_per_mm: 50.000
+    max_rate_mm_per_min: 4000.000
+    acceleration_mm_per_sec2: 200.000
+    max_travel_mm: 450.000
+    motor0:
+      stepstick:
+        step_pin: gpio.27
+        direction_pin: gpio.26:low
+    motor1:
+      stepstick:
+        step_pin: gpio.18
+        direction_pin: gpio.19:low
+
+  y:
+    steps_per_mm: 50.000
+    max_rate_mm_per_min: 4000.000
+    acceleration_mm_per_sec2: 200.000
+    max_travel_mm: 450.000
+    motor0:
+      stepstick:
+        step_pin: gpio.14
+        direction_pin: gpio.13:low
+    motor1:
+      stepstick:
+        step_pin: gpio.33
+        direction_pin: gpio.32
+
+  z:
+    steps_per_mm: 50.000
+    max_rate_mm_per_min: 1000.000
+    acceleration_mm_per_sec2: 100.000
+    max_travel_mm: 100.000
+    motor0:
+      stepstick:
+        step_pin: gpio.4
+        direction_pin: gpio.5
+
+# ─── Laser (Sculpfun S9) — uncomment when ready ───────────────────────────────
+# PWM:
+#   pwm_hz: 5000
+#   output_pin: gpio.25:low
+#   enable_pin: NO_PIN
+#   disable_with_s0: true
+#   s0_with_disable: true
+#   spinup_ms: 0
+#   spindown_ms: 0
+#   tool_num: 0
+#   speed_map: 0=0% 1000=100%

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>plot.py — Pen Plotter README</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg:      #0f1117;
+    --surface: #181c27;
+    --surf2:   #1e2335;
+    --border:  #2a3050;
+    --accent:  #4fc3f7;
+    --green:   #69f0ae;
+    --amber:   #ffd740;
+    --muted:   #7986cb;
+    --text:    #e8eaf6;
+    --dim:     #a0aac8;
+    --mono:    'JetBrains Mono', monospace;
+    --sans:    'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.75;
+    padding-bottom: 80px;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 48px;
+  }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 48px 48px 0;
+  }
+
+  h2 {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin: 40px 0 18px;
+  }
+
+  h2:first-child { margin-top: 0; }
+
+  p {
+    color: var(--dim);
+    margin-bottom: 14px;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--green);
+    background: #0a0d14;
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  .block {
+    background: #0a0d14;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 2;
+    margin-bottom: 16px;
+    overflow-x: auto;
+  }
+
+  .block .c  { color: #4a5568; }
+  .block .cmd { color: var(--accent); }
+  .block .arg { color: #ce93d8; }
+  .block .val { color: var(--amber); }
+  .block .flag { color: var(--green); }
+
+  .tip {
+    background: var(--surf2);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 16px;
+    font-size: 13.5px;
+    color: var(--dim);
+    margin-bottom: 16px;
+  }
+
+  .tip strong { color: var(--accent); font-weight: 500; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin-bottom: 20px;
+  }
+
+  th {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #1e2335;
+    color: var(--dim);
+    vertical-align: top;
+  }
+
+  td:first-child {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--green);
+    white-space: nowrap;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  .config-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+
+  .config-block h3 {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 14px;
+    letter-spacing: 1px;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13.5px;
+    padding: 5px 0;
+    border-bottom: 1px solid #1e2335;
+  }
+
+  .row:last-child { border-bottom: none; }
+  .row .key { font-family: var(--mono); font-size: 12.5px; color: var(--amber); }
+  .row .val2 { color: var(--dim); font-size: 13px; }
+
+  footer {
+    max-width: 820px;
+    margin: 48px auto 0;
+    padding: 0 48px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #2a3050;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>plot.py</h1>
+  <div class="subtitle">MPCNC pen plotter pipeline &nbsp;·&nbsp; SVG → optimized gcode → Lightburn → machine</div>
+</header>
+
+<main>
+
+  <!-- USAGE -->
+  <h2>Basic usage</h2>
+  <div class="block">
+
+<span class="val">python plot.py ~/Downloads/floral.svg floral.gcode a4_portrait --zigzag 0.4 --fill-mode stroke --preview --estimate --mirror-y --compactness 0.05</span>
+<br>
+<span class="c"># minimal — no scaling, no fill</span>
+<span class="cmd">python</span> <span class="arg">plot.py</span> <span class="val">input.svg</span> <span class="val">output.gcode</span>
+
+<span class="c"># scale to A4 landscape</span>
+<span class="cmd">python</span> <span class="arg">plot.py</span> <span class="val">input.svg</span> <span class="val">output.gcode</span> <span class="flag">a4_landscape</span>
+
+<span class="c"># scale to A4 portrait</span>
+<span class="cmd">python</span> <span class="arg">plot.py</span> <span class="val">input.svg</span> <span class="val">output.gcode</span> <span class="flag">a4_portrait</span>
+  </div>
+
+  <div class="tip">
+    <strong>Page sizes</strong> include a 25mm margin. A4 landscape = 250×190mm, A4 portrait = 190×250mm. Design scales proportionally to fit.
+  </div>
+
+  <!-- FILL -->
+  <h2>Offset fill</h2>
+  <p>Concentric inward rings — like Lightburn's offset fill. Pen lifts between rings. Looks great for logos and bold shapes.</p>
+
+  <div class="block">
+<span class="c"># offset fill at 0.6mm spacing</span>
+<span class="cmd">python</span> <span class="arg">plot.py</span> <span class="val">input.svg</span> <span class="val">output.gcode</span> <span class="flag">a4_landscape</span> <span class="flag">--fill</span> <span class="val">0.6</span>
+
+<span class="c"># tighter fill for fine detail</span>
+<span class="cmd">python</span> <span class="arg">plot.py</span> <span class="val">input.svg</span> <span class="val">output.gcode</span> <span class="flag">a4_landscape</span> <span class="flag">--fill</span> <span class="val">0.4</span>
+
+<span class="c"># looser fill, faster to plot</span>
+<span class="cmd">python</span> <span class="arg">plot.py</span> <span class="val">input.svg</span> <span class="val">output.gcode</span> <span class="flag">a4_landscape</span> <span class="flag">--fill</span> <span class="val">1.0</span>
+  </div>
+
+  <div class="tip">
+    <strong>Inkscape prep:</strong> filled shapes need an actual fill color set (Object → Fill and Stroke → solid fill). Shapes with fill=none are treated as outlines only.
+  </div>
+
+  <!-- HATCH -->
+  <h2>Parallel hatch</h2>
+  <p>Parallel lines swept across filled shapes — classic technical drawing style. Fewer pen lifts than offset fill.</p>
+
+  <div class="block">
+<span class="c"># 45° hatch at 0.6mm spacing (default angle)</span>
+<span class="cmd">python</span> <span class="arg">plot.py</span> <span class="val">input.svg</span> <span class="val">output.gcode</span> <span class="flag">a4_landscape</span> <span class="flag">--hatch</span> <span class="val">0.6</span>
+
+<span class="c"># 30° hatch — shallower angle</span>
+<span class="cmd">python</span> <span class="arg">plot.py</span> <span class="val">input.svg</span> <span class="val">output.gcode</span> <span class="flag">a4_landscape</span> <span class="flag">--hatch</span> <span class="val">0.6</span> <span class="flag">--hatch-angle</span> <span class="val">30</span>
+
+<span class="c"># crosshatch effect — run twice at 45° and 135°</span>
+<span class="cmd">python</span> <span class="arg">plot.py</span> <span class="val">input.svg</span> <span class="val">output1.gcode</span> <span class="flag">a4_landscape</span> <span class="flag">--hatch</span> <span class="val">0.8</span> <span class="flag">--hatch-angle</span> <span class="val">45</span>
+<span class="cmd">python</span> <span class="arg">plot.py</span> <span class="val">input.svg</span> <span class="val">output2.gcode</span> <span class="flag">a4_landscape</span> <span class="flag">--hatch</span> <span class="val">0.8</span> <span class="flag">--hatch-angle</span> <span class="val">135</span>
+
+<span class="c"># dense technical fill</span>
+<span class="cmd">python</span> <span class="arg">plot.py</span> <span class="val">input.svg</span> <span class="val">output.gcode</span> <span class="flag">a4_landscape</span> <span class="flag">--hatch</span> <span class="val">0.4</span> <span class="flag">--hatch-angle</span> <span class="val">45</span>
+
+<span class="c"># combine outlines + hatch in one pass</span>
+<span class="cmd">python</span> <span class="arg">plot.py</span> <span class="val">input.svg</span> <span class="val">output.gcode</span> <span class="flag">a4_landscape</span> <span class="flag">--hatch</span> <span class="val">0.6</span> <span class="flag">--fill</span> <span class="val">0.6</span>
+  </div>
+
+  <!-- CONFIG -->
+  <h2>Config (top of plot.py)</h2>
+  <div class="config-block">
+    <h3>MACHINE SETTINGS</h3>
+    <div class="row"><span class="key">QUANTIZATION</span><span class="val2">1.0mm — curve smoothness. Higher = fewer segments, faster. Try 0.5–2.0</span></div>
+    <div class="row"><span class="key">MERGE_TOL</span><span class="val2">0.5mm — join path ends within this distance into one stroke</span></div>
+    <div class="row"><span class="key">PEN_UP_Z</span><span class="val2">0 — Z position when pen is lifted</span></div>
+    <div class="row"><span class="key">PEN_DOWN_Z</span><span class="val2">-80 — Z position when pen touches paper (tune this!)</span></div>
+    <div class="row"><span class="key">FEED_Z</span><span class="val2">1000 mm/min — Z axis speed (max per FluidNC config)</span></div>
+    <div class="row"><span class="key">FEED_TRAVEL</span><span class="val2">3500 mm/min — XY speed when pen is up</span></div>
+    <div class="row"><span class="key">FEED_DRAW</span><span class="val2">3000 mm/min — XY speed when drawing</span></div>
+  </div>
+
+  <!-- ARGS TABLE -->
+  <h2>All arguments</h2>
+  <table>
+    <thead>
+      <tr><th>Argument</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>input.svg</td><td>Path to your SVG file</td></tr>
+      <tr><td>output.gcode</td><td>Where to write the gcode</td></tr>
+      <tr><td>a4_landscape</td><td>Scale to fit 250×190mm (A4 with margin)</td></tr>
+      <tr><td>a4_portrait</td><td>Scale to fit 190×250mm (A4 with margin)</td></tr>
+      <tr><td>--fill 0.6</td><td>Offset fill at 0.6mm spacing (concentric rings)</td></tr>
+      <tr><td>--hatch 0.6</td><td>Parallel hatch at 0.6mm spacing</td></tr>
+      <tr><td>--hatch-angle 45</td><td>Hatch angle in degrees (default: 45)</td></tr>
+    </tbody>
+  </table>
+
+  <!-- WORKFLOW -->
+  <h2>Workflow</h2>
+  <div class="block">
+<span class="c"># 1. get image (PNG/JPG/SVG)</span>
+<span class="c"># 2. if raster: open in Inkscape → Path → Trace Bitmap → save as plain SVG</span>
+<span class="c"># 3. if you want fill: set fill colors in Inkscape (Object → Fill and Stroke)</span>
+<span class="c"># 4. run plot.py</span>
+<span class="cmd">python</span> <span class="arg">plot.py</span> <span class="val">input.svg</span> <span class="val">output.gcode</span> <span class="flag">a4_landscape</span>
+<span class="c"># 5. open output.gcode in Lightburn → send to MPCNC over WiFi</span>
+  </div>
+
+  <!-- TIPS -->
+  <h2>Tips</h2>
+  <div class="tip" style="margin-bottom:12px;">
+    <strong>Ballpoint @ 0.3–0.4mm:</strong> hatch spacing of 0.5–0.8mm gives solid fill without overworking the paper. Below 0.4mm and you're just grinding.
+  </div>
+  <div class="tip" style="margin-bottom:12px; border-left-color: #69f0ae;">
+    <strong>Venv:</strong> always activate before running — <code>source ~/Documents/mpcnc/plotter/venv/bin/activate</code>
+  </div>
+  <div class="tip" style="border-left-color: #ffd740;">
+    <strong>Z tuning:</strong> PEN_DOWN_Z = -80 is a starting point for the spring mount. If lines are faint, go more negative. If paper is getting gouged, go less.
+  </div>
+
+  <h2>Inkscape prep</h2>
+
+    <br>GIMP
+
+      <br>Ignore 95% of the UI 😄
+      <br>You only need:
+    <li>
+      <ul>Colors → Desaturate</ul>
+      <ul>Colors → Levels</ul>
+      <ul>Filters → Blur → Gaussian Blur</ul>
+      <ul>Colors → Threshold</ul>
+      <ul>export as PNG</ul>
+    </li>
+    <br>INKSCAPE
+
+    <br>1. Import your PNG
+      <li>
+        <ul>File → Import</ul>
+        <ul>Select image</ul>
+        <ul>defaults (embed is fine)</ul>
+      </li>
+    <br>2. Trace Bitmap (this is the key step)
+      <li>
+        <ul>Select the image</ul>
+        <ul>Go: Path → Trace Bitmap</ul>
+        <ul>Start with these settings:</ul>
+        <ul>Option A — Single scan (best for plotters)</ul>
+        <ul>Mode: Brightness cutoff</ul>
+        <ul>Threshold: ~0.6–0.75</ul>
+        <ul>✔ Remove background</ul>
+      </li>
+
+    <br>👉 This gives you clean black shapes
+
+        <ul>Option B — Edge detection (sometimes better for buildings)</ul>
+        <ul>Mode: Edge detection</ul>
+        <ul>Threshold: ~0.3–0.6</ul>
+
+    <br>👉 This gives you linework instead of filled shapes
+
+  </h2>
+</main>
+
+<footer>plot.py · vpype 1.14.0 · Shapely 2.x · MPCNC Primo · FluidNC · Lightburn</footer>
+
+</body>
+</html>
